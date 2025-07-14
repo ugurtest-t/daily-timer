@@ -1,42 +1,54 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Geri Sayım</title>
   <style>
-    html, body {
+    body {
       margin: 0;
       padding: 0;
-      background-color: transparent;
-      font-family: 'Courier New', monospace;
-      overflow: hidden;
-    }
-
-    .timer {
-      font-size: 4em;
+      background: transparent;
       color: white;
+      font-family: 'Courier New', monospace;
+      font-size: 4em;
       text-align: center;
-      padding: 20px 10px;
-      box-sizing: border-box;
+      padding-top: 20px;
     }
   </style>
 </head>
 <body>
-  <div class="timer" id="countdown">00:00:00</div>
+  <div id="countdown">00:00:00</div>
 
   <script>
+    // Sayacı başlatmak için sadece dakika ve saniyeyi al
+    const now = new Date();
+    const startMinute = now.getMinutes();
+    const startSecond = now.getSeconds();
+
+    // Başlangıç anındaki toplam saniye
+    const startOffset = (startMinute * 60) + startSecond;
+
+    // Toplam gün süresi (24 saat)
+    const totalSecondsInDay = 24 * 60 * 60;
+
     function updateCountdown() {
-      const now = new Date(); // cihaz saati alınır
-      const endOfDay = new Date();
-      endOfDay.setHours(24, 0, 0, 0); // bugün saat 24:00
+      const now = new Date();
+      const currentMinute = now.getMinutes();
+      const currentSecond = now.getSeconds();
+      const currentOffset = (currentMinute * 60) + currentSecond;
 
-      const diff = endOfDay - now;
+      // Geçen süre (saniye)
+      let elapsed = currentOffset - startOffset;
+      if (elapsed < 0) elapsed += totalSecondsInDay;
 
-      const hours = String(Math.floor(diff / (1000 * 60 * 60))).padStart(2, '0');
-      const minutes = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
-      const seconds = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, '0');
+      // Kalan süre
+      let remaining = totalSecondsInDay - elapsed;
 
-      document.getElementById('countdown').textContent = `${hours}:${minutes}:${seconds}`;
+      const hours = String(Math.floor(remaining / 3600)).padStart(2, '0');
+      const minutes = String(Math.floor((remaining % 3600) / 60)).padStart(2, '0');
+      const seconds = String(remaining % 60).padStart(2, '0');
+
+      document.getElementById("countdown").textContent = `${hours}:${minutes}:${seconds}`;
     }
 
     updateCountdown();
