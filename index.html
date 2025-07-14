@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <title>Countdown</title>
+  <title>Geri Sayım</title>
   <style>
     html, body {
       margin: 0;
@@ -26,18 +26,17 @@
 
   <script>
     function updateCountdown() {
-      const now = new Date();
-      const turkishNow = new Date(now.getTime() + (3 * 60 * 60 * 1000)); // UTC+3 Türkiye saati
-      const nextMidnight = new Date(turkishNow);
-      nextMidnight.setHours(24, 0, 0, 0); // 00:00 TR saati
+      const now = new Date(); // cihaz saati alınır
+      const endOfDay = new Date();
+      endOfDay.setHours(24, 0, 0, 0); // bugün saat 24:00
 
-      const diff = nextMidnight - turkishNow;
+      const diff = endOfDay - now;
 
       const hours = String(Math.floor(diff / (1000 * 60 * 60))).padStart(2, '0');
       const minutes = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
       const seconds = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, '0');
 
-      document.getElementById("countdown").textContent = `${hours}:${minutes}:${seconds}`;
+      document.getElementById('countdown').textContent = `${hours}:${minutes}:${seconds}`;
     }
 
     updateCountdown();
