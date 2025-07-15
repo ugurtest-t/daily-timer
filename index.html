@@ -2,57 +2,57 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <title>Geri Sayım</title>
+  <title></title>
   <style>
-    body {
+    html, body {
       margin: 0;
       padding: 0;
       background: transparent;
-      color: white;
+      height: 100%;
+    }
+    #countdown {
       font-family: 'Courier New', monospace;
       font-size: 4em;
+      color: white;
+      text-shadow: 0 0 8px rgba(0,0,0,0.5);
       text-align: center;
-      padding-top: 20px;
+      padding: 20px;
+      /* Arka plan koymanız istersen buraya ekle */
     }
   </style>
 </head>
 <body>
-  <div id="countdown">00:00:00</div>
+  <div id="countdown">--:--:--</div>
 
   <script>
-    // Sayacı başlatmak için sadece dakika ve saniyeyi al
-    const now = new Date();
-    const startMinute = now.getMinutes();
-    const startSecond = now.getSeconds();
-
-    // Başlangıç anındaki toplam saniye
-    const startOffset = (startMinute * 60) + startSecond;
-
-    // Toplam gün süresi (24 saat)
-    const totalSecondsInDay = 24 * 60 * 60;
-
-    function updateCountdown() {
-      const now = new Date();
-      const currentMinute = now.getMinutes();
-      const currentSecond = now.getSeconds();
-      const currentOffset = (currentMinute * 60) + currentSecond;
-
-      // Geçen süre (saniye)
-      let elapsed = currentOffset - startOffset;
-      if (elapsed < 0) elapsed += totalSecondsInDay;
-
-      // Kalan süre
-      let remaining = totalSecondsInDay - elapsed;
-
-      const hours = String(Math.floor(remaining / 3600)).padStart(2, '0');
-      const minutes = String(Math.floor((remaining % 3600) / 60)).padStart(2, '0');
-      const seconds = String(remaining % 60).padStart(2, '0');
-
-      document.getElementById("countdown").textContent = `${hours}:${minutes}:${seconds}`;
+    async function fetchTurkishTime() {
+      const res = await fetch("https://worldtimeapi.org/api/timezone/Europe/Istanbul");
+      const data = await res.json();
+      return new Date(data.datetime);
     }
 
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
+    async function startCountdown() {
+      let now = await fetchTurkishTime();
+
+      function update() {
+        const end = new Date(now);
+        end.setHours(24, 0, 0, 0);
+        let diff = end - now;
+        if (diff < 0) diff = 0;
+
+        const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
+        const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+        const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+
+        document.getElementById("countdown").textContent = `${h}:${m}:${s}`;
+        now = new Date(now.getTime() + 1000);
+      }
+
+      update(); 
+      setInterval(update, 1000);
+    }
+
+    startCountdown();
   </script>
 </body>
 </html>
