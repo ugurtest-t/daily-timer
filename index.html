@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <title>Countdown TR</title>
+  <title>Timer 03:59:00</title>
   <style>
     html, body {
       margin: 0;
@@ -21,47 +21,28 @@
   </style>
 </head>
 <body>
-  <div id="countdown">--:--:--</div>
+  <div id="countdown">03:59:00</div>
 
   <script>
-    async function fetchTRTime() {
-      try {
-        const res = await fetch("https://worldtimeapi.org/api/timezone/Europe/Istanbul");
-        const data = await res.json();
-        return new Date(data.datetime);
-      } catch (e) {
-        console.warn("TR saatine ulaşılamadı, cihaz saati kullanılıyor.");
-        return new Date();
+    let remainingMilliseconds = (3 * 60 + 59) * 1000; // 3 dakika 59 saniye
+
+    function updateTimer() {
+      const totalSeconds = Math.floor(remainingMilliseconds / 1000);
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      const milliseconds = Math.floor((remainingMilliseconds % 1000) / 10);
+
+      document.getElementById("countdown").textContent =
+        `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}:${String(milliseconds).padStart(2, '0')}`;
+
+      if (remainingMilliseconds > 0) {
+        remainingMilliseconds -= 10;
+      } else {
+        remainingMilliseconds = (3 * 60 + 59) * 1000; // yeniden başlat
       }
     }
 
-    function formatTime(h, m, s) {
-      return [h, m, s].map(num => String(num).padStart(2, '0')).join(":");
-    }
-
-    async function startCountdown() {
-      let baseNow = await fetchTRTime();
-
-      function updateTimer() {
-        let now = new Date();
-        let msPassedToday = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-        let remainingSeconds = 86400 - msPassedToday;
-
-        // Döngüsel olarak 00:00'a dön
-        if (remainingSeconds <= 0) remainingSeconds = 86400;
-
-        const hours = Math.floor(remainingSeconds / 3600);
-        const minutes = Math.floor((remainingSeconds % 3600) / 60);
-        const seconds = remainingSeconds % 60;
-
-        document.getElementById("countdown").textContent = formatTime(hours, minutes, seconds);
-      }
-
-      updateTimer();
-      setInterval(updateTimer, 1000);
-    }
-
-    startCountdown();
+    setInterval(updateTimer, 10);
   </script>
 </body>
 </html>
